@@ -1,0 +1,207 @@
+name: "chaoyang-prescription-network"
+description: "chao yang hospital prescription network"
+version: 1.0.0
+client:
+  organization: cyorg.bjgoodwill.com
+  logging:
+    level: info
+  cryptoconfig:
+    path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config
+    #path: /opt/app/fabric/cli/user/cyorg.bjgoodwill.com/Admin-peer0cyorg.bjgoodwill..com
+  credentialStore:
+    path: /tmp/state-store
+    cryptoStore:
+      path: /tmp/msp
+  BCCSP:
+    security:
+     enabled: true
+     default:
+      provider: "SW"
+     hashAlgorithm: "SHA2"
+     softVerify: true
+     level: 256
+  tlsCerts:
+    systemCertPool: false
+    client:
+      key:
+        path:
+        #path: /opt/app/fabric/cli/user/cyorg.bjgoodwill.com/Admin-peer0.cyorg.bjgoodwill.com/tls/client.key
+      cert:
+        path:
+        #path: /opt/app/fabric/cli/user/cyorg.bjgoodwill.com/Admin-peer0.cyorg.bjgoodwill.com/tls/client.crt
+channels:
+  prescriptionchannel:
+    peers:
+      peer0.cyorg.bjgoodwill.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+    policies:
+      queryChannelConfig:
+        minResponses: 1
+        maxTargets: 1
+        retryOpts:
+          attempts: 5
+          initialBackoff: 500ms
+          maxBackoff: 5s
+          backoffFactor: 2.0
+          
+  prescriptionmultiorgchannel:
+
+    peers:
+      peer0.cyorg.bjgoodwill.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      peer0.jhorg.bjgoodwill.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      peer0.wjworg.bjgoodwill.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+    # [Optional]. The application can use these options to perform channel operations like retrieving channel
+    # config etc.
+    policies:
+      #[Optional] options for retrieving channel configuration blocks
+      queryChannelConfig:
+        #[Optional] min number of success responses (from targets/peers)
+        minResponses: 1
+        #[Optional] channel config will be retrieved for these number of random targets
+        maxTargets: 1
+        #[Optional] retry options for query config block
+        retryOpts:
+          #[Optional] number of retry attempts
+          attempts: 5
+          #[Optional] the back off interval for the first retry attempt
+          initialBackoff: 500ms
+          #[Optional] the maximum back off interval for any retry attempt
+          maxBackoff: 5s
+          #[Optional] he factor by which the initial back off period is exponentially incremented
+          backoffFactor: 2.0
+
+organizations:
+  cyorg.bjgoodwill.com:
+    mspid: CYOrgMSP
+    cryptoPath: peerOrganizations/cyorg.bjgoodwill.com/users/Admin@cyorg.bjgoodwill.com/msp/
+    #cryptoPath: msp/
+    peers:
+      - peer0.cyorg.bjgoodwill.com
+    certificateAuthorities:
+      - ca.cyorg.bjgoodwill.com
+  
+  jhorg.bjgoodwill.com:
+    mspid: JHOrgMSP
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/jhorg.bjgoodwill.com/users/Admin@jhorg.bjgoodwill.com/msp
+    peers:
+      - peer0.jhorg.bjgoodwill.com
+    certificateAuthorities:
+      - ca.jhorg.bjgoodwill.com
+  
+  wjworg.bjgoodwill.com:
+    mspid: WJWOrgMSP
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/wjworg.bjgoodwill.com/users/Admin@wjworg.bjgoodwill.com/msp
+    peers:
+      - peer0.wjworg.bjgoodwill.com
+    certificateAuthorities:
+      - ca.wjworg.bjgoodwill.com 
+     # Orderer Org name
+  ordererorg:
+      # Membership Service Provider ID for this organization
+      mspID: "PrescriptionOrdererMSP"
+
+      # Needed to load users crypto keys and certs for this org (absolute path or relative to global crypto path, DEV mode)
+      cryptoPath: ordererOrganizations/bjgoodwill.com/users/Admin@bjgoodwill.com/msp
+
+orderers:
+  orderer.bjgoodwill.com:
+    url: grpc://192.168.229.136:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.bjgoodwill.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/ordererOrganizations/bjgoodwill.com/tlsca/tlsca.bjgoodwill.com-cert.pem
+      #path: /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com/tlsca.member1.example.com-cert.pem
+peers:
+  peer0.cyorg.bjgoodwill.com:
+    url: grpc://192.168.229.138:7051
+    eventUrl: grpc://192.168.229.138:7053
+    grpcOptions:
+      ssl-target-name-override: peer0.cyorg.bjgoodwill.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/cyorg.bjgoodwill.com/tlsca/tlsca.cyorg.bjgoodwill.com-cert.pem
+      #path: /opt/app/fabric/cli/user/cyorg.bjgoodwill.com/Admin-peer0.cyorg.bjgoodwill.com/tls/ca.crt
+ 
+  peer0.jhorg.bjgoodwill.com:
+    url: peer0.jhorg.bjgoodwill.com:7051
+    eventUrl: peer0.jhorg.bjgoodwill.com:7053
+    grpcOptions:
+      ssl-target-name-override: peer0.jhorg.bjgoodwill.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/jhorg.bjgoodwill.com/tlsca/tlsca.jhorg.bjgoodwill.com-cert.pem
+      #path: /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com/tls/ca.crt
+      
+  peer0.wjworg.bjgoodwill.com:
+    url: peer0.wjworg.bjgoodwill.com:7051
+    eventUrl: peer0.wjworg.bjgoodwill.com:7053
+    grpcOptions:
+      ssl-target-name-override: peer0.wjworg.bjgoodwill.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/wjworg.bjgoodwill.com/tlsca/tlsca.wjworg.bjgoodwill.com-cert.pem
+      #path: /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com/tls/ca.crt
+certificateAuthorities:
+  ca.fbi.citizens.com:
+    url: https://192.168.229.138:7054
+    tlsCACerts:
+      # Comma-Separated list of paths
+      path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/cyorg.bjgoodwill.com/tlsca/tlsca.cyorg.bjgoodwill.com-cert.pem
+      # Client key and cert for SSL handshake with Fabric CA
+      client:
+        key:
+          path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/cyorg.bjgoodwill.com/users/User1@cyorg.bjgoodwill.com/tls/client.key
+        cert:
+          path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config/peerOrganizations/cyorg.bjgoodwill.com/users/User1@cyorg.bjgoodwill.com/tls/client.crt
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca.cyorg.bjgoodwill.com
+
+entityMatchers:
+  orderer:
+    - pattern: (\w*)orderer.bjgoodwill.com(\w*)
+      urlSubstitutionExp: grpc://orderer.bjgoodwill.com:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.bjgoodwill.com
+      mappedHost: orderer.bjgoodwill.com
