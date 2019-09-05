@@ -6,12 +6,12 @@ client:
   logging:
     level: info
   cryptoconfig:
-    path: ${GOPATH}/src/github.com/prescriptionserver/client/go/crypto-config
+    path: ${GOPATH}/src/crypto-config
     #path: /opt/app/fabric/cli/user/cyorg.bjgoodwill.com/Admin-peer0cyorg.bjgoodwill..com
   credentialStore:
-    path: /tmp/state-store
+    path: H:/tmp/state-store
     cryptoStore:
-      path: /tmp/msp
+      path: H:/tmp/msp
   BCCSP:
     security:
      enabled: true

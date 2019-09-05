@@ -9,16 +9,18 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/core"
+
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+	// "BlockChainP1/flag"
 )
 
 const (
-	channelID      = "default"
-	orgName        = "bcs06071508"
+	channelID      = "chufan"
+	orgName        = "org1"
 	orgAdmin       = "Admin"
-	ordererOrgName = "bcs06071508"
-	ccID           = "obcs-example02"
+	ordererOrgName = "OrdererMSP"
+	ccID           = "mycc"
 )
 
 // ExampleCC query and transaction arguments
@@ -87,7 +89,7 @@ func queryCC(client *channel.Client) []byte {
 }
 
 func main() {
-	configPath := "./config.yaml"
+	configPath := "./config_e2e.yaml"
 	//End to End testing
 	setupAndRun(config.FromFile(configPath))
 }
